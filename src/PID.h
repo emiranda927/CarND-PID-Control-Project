@@ -17,6 +17,19 @@ public:
   double Ki;
   double Kd;
 
+  double dKp;
+  double dKi;
+  double dKd;
+
+  double best_error;
+  double error;
+
+  int process_step;
+  char param;
+  int avg_count = 0;
+
+  bool is_init = false;
+
   /*
   * Constructor
   */
@@ -30,7 +43,7 @@ public:
   /*
   * Initialize PID.
   */
-  void Init(double Kp, double Ki, double Kd);
+  void Init(double Kp, double Ki, double Kd, double dKp, double dKi, double dKd, int process_step, char param);
 
   /*
   * Update the PID error variables given cross track error.
@@ -41,6 +54,12 @@ public:
   * Calculate the total PID error.
   */
   double TotalError();
+
+private:
+  /*
+   * private variable for internal calculations
+   */
+  double prev_cte_;
 };
 
 #endif /* PID_H */
