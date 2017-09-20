@@ -136,8 +136,9 @@ int main()
 
   pid.Init(0.2, 0.004, 3.0, 0.01, 0.0001, 0.1, 1, 'p');
   //pid_t.Init(0.0, 0.0, 0.0, 0.1, 0.1, 0.1);
+  double prev_steer = 0.0;
 
-  h.onMessage([&pid](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
+  h.onMessage([&pid, &prev_steer](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
     // The 2 signifies a websocket event
@@ -154,7 +155,7 @@ int main()
           double angle = std::stod(j[1]["steering_angle"].get<std::string>());
           double steer_value;
           double prev_error = 0.0;
-          double throttle = 0.6;
+          double throttle = 0.8;
           double tol = 0.00001;
 
           /*
@@ -272,13 +273,19 @@ int main()
 
 
           // DEBUG
-          std::cout << "Error: " << pid.error << "Best Error: " << pid.best_error << std::endl;
-          std::cout << "P: " << pid.Kp << "I: " << pid.Ki << "D: " << pid.Kd <<std::endl;
-          std::cout << " Steering Value: " << steer_value << std::endl;
+         // std::cout << "Error: " << pid.error << "Best Error: " << pid.best_error << std::endl;
+          //std::cout << "P: " << pid.Kp << "I: " << pid.Ki << "D: " << pid.Kd <<std::endl;
+          //std::cout << " Steering Value: " << steer_value << std::endl;
 
+          if(pow(prev_steer, 2) - pow(steer_value,2) > 0.12){
+            throttle = -1.0;
+          }
+
+          std::cout << pow(prev_steer, 2) << "     " << pow(steer_value, 2) << std::endl;
 
           json msgJson;
           msgJson["steering_angle"] = steer_value;
+          prev_steer = steer_value;
           msgJson["throttle"] = throttle;
           auto msg = "42[\"steer\"," + msgJson.dump() + "]";
           std::cout << msg << std::endl;
