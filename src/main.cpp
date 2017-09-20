@@ -134,8 +134,9 @@ int main()
   //pid.Ki = 0.004;
   //pid.Kd = 3.0;
 
-  pid.Init(0.2, 0.004, 3.0, 0.01, 0.0001, 0.1, 1, 'p');
-  //pid_t.Init(0.0, 0.0, 0.0, 0.1, 0.1, 0.1);
+  //pid.Init(0.2, 0.004, 3.0, 0.01, 0.0001, 0.1, 1, 'p');
+  pid.Init(0.17, 0.004, 2.8, 0.01, 0.0001, 0.01, 1, 'i');
+  //pid.Init(0.0, 0.0, 0.0, 0.1, 0.1, 0.1, 1, 'p');
   double prev_steer = 0.0;
 
   h.onMessage([&pid, &prev_steer](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
@@ -154,9 +155,8 @@ int main()
           double speed = std::stod(j[1]["speed"].get<std::string>());
           double angle = std::stod(j[1]["steering_angle"].get<std::string>());
           double steer_value;
-          double prev_error = 0.0;
           double throttle = 0.8;
-          double tol = 0.00001;
+          double tol = 0.000001;
 
           /*
           * TODO: Calcuate steering value here, remember the steering value is
@@ -273,11 +273,11 @@ int main()
 
 
           // DEBUG
-         // std::cout << "Error: " << pid.error << "Best Error: " << pid.best_error << std::endl;
-          //std::cout << "P: " << pid.Kp << "I: " << pid.Ki << "D: " << pid.Kd <<std::endl;
-          //std::cout << " Steering Value: " << steer_value << std::endl;
+          std::cout << "Error: " << pid.error << "Best Error: " << pid.best_error << std::endl;
+          std::cout << "P: " << pid.Kp << "I: " << pid.Ki << "D: " << pid.Kd <<std::endl;
+          std::cout << " Steering Value: " << steer_value << std::endl;
 
-          if(pow(prev_steer, 2) - pow(steer_value,2) > 0.12){
+          if(pow(prev_steer, 2) - pow(steer_value,2) > 0.08 && speed > 45){
             throttle = -1.0;
           }
 

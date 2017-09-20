@@ -21,7 +21,7 @@ public:
   double dKi;
   double dKd;
 
-  double best_error;
+  double best_error = 10000.0;
   double error;
 
   int process_step;
